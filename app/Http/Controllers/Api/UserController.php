@@ -355,7 +355,8 @@ class UserController extends Controller
 
 
         //first test if it is manager
-        $isManagerOrSupervisor = $manager->positions()
+        $isManagerOrSupervisor =
+            $manager->positions()
             ->where(function ($q) {
                 $q->where('label', 'LIKE', '%manager%')
                     ->orWhere('label', 'LIKE', '%supervisor%');
@@ -406,6 +407,8 @@ class UserController extends Controller
                 )
                 &&
                 empty($manager->department_id)
+                &&
+                $manager->position_id !== 16
             ) {
                 $branches = $manager->branches()->pluck('branches.id');
 
@@ -453,6 +456,9 @@ class UserController extends Controller
                     'employees' => $employees
                 ], 200);
             }
+            return response()->json([
+                'message'   => "failed ifs"
+            ]);
         }
         return response()->json([
             'error' => 'Auth user is not a manager'

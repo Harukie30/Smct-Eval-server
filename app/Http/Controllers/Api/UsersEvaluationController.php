@@ -93,8 +93,7 @@ class UsersEvaluationController extends Controller
 
     public function store(Request $request, User $user)
     {
-        // $auth_user_evaluator = Auth::user();
-        $auth_user_evaluator = User::findOrFail(4);
+        $auth_user_evaluator = Auth::user();
 
 
         $validated  = $request->validate([
