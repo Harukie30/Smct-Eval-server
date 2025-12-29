@@ -19,17 +19,17 @@ class UserController extends Controller
     public function registerUser(Request $request)
     {
         $validate = $request->validate([
-            'fname'                     => ['required', 'string', 'alpha'],
-            'lname'                     => ['required', 'string', 'alpha'],
-            'email'                     => ['required', Rule::unique('users', 'email'), 'email', 'string', 'lowercase'],
-            'position_id'               => ['required', Rule::exists('positions', 'id')],
-            'branch_id'                 => ['required', Rule::exists('branches', 'id')],
-            'department_id'             => ['nullable', Rule::exists('departments', 'id')],
-            'signature'                 => ['required'],
-            'employee_id'               => ['required', Rule::unique('users', 'emp_id')],
-            'username'                  => ['required', 'string', 'lowercase', Rule::unique('users', 'username')],
-            'contact'                   => ['required', 'string'],
-            'password'                  => ['required', 'string', 'min: 8', 'max:20']
+            'fname' => ['required', 'string', 'alpha'],
+            'lname' => ['required', 'string', 'alpha'],
+            'email' => ['required', Rule::unique('users', 'email'), 'email', 'string', 'lowercase'],
+            'position_id' => ['required', Rule::exists('positions', 'id')],
+            'branch_id' => ['required', Rule::exists('branches', 'id')],
+            'department_id' => ['nullable', Rule::exists('departments', 'id')],
+            'signature' => ['required'],
+            'employee_id' => ['required', Rule::unique('users', 'emp_id')],
+            'username' => ['required', 'string', 'lowercase', Rule::unique('users', 'username')],
+            'contact' => ['required', 'string'],
+            'password' => ['required', 'string', 'min: 8', 'max:20']
         ]);
 
         //file handling | storing
@@ -41,28 +41,28 @@ class UserController extends Controller
             $path = $signature->storeAs('user-signatures', $name, 'public');
         } else {
             return response()->json([
-                'message'       => 'Signature not found or invalid file.'
+                'message' => 'Signature not found or invalid file.'
             ], 400);
         }
 
         $user = User::create([
-            'fname'                     => $validate['fname'],
-            'lname'                     => $validate['lname'],
-            'email'                     => $validate['email'],
-            'position_id'               => $validate['position_id'],
-            'department_id'             => $validate['department_id'],
-            'signature'                 => $path ?? null,
-            'emp_id'                    => $validate['employee_id'],
-            'username'                  => $validate['username'],
-            'contact'                   => $validate['contact'],
-            'password'                  => $validate['password']
+            'fname' => $validate['fname'],
+            'lname' => $validate['lname'],
+            'email' => $validate['email'],
+            'position_id' => $validate['position_id'],
+            'department_id' => $validate['department_id'],
+            'signature' => $path ?? null,
+            'emp_id' => $validate['employee_id'],
+            'username' => $validate['username'],
+            'contact' => $validate['contact'],
+            'password' => $validate['password']
         ]);
 
         $user->assignRole('employee');
         $user->branches()->sync($validate['branch_id']);
 
         //notification for admin and hr
-        $notificationData =  new EvalNotifications(
+        $notificationData = new EvalNotifications(
             "New user registration: " . $user->fname . " " . $user->lname,
         );
 
@@ -81,44 +81,44 @@ class UserController extends Controller
             );
 
         return response()->json([
-            "message"       => "Registered Successfully",
+            "message" => "Registered Successfully",
         ], 200);
     }
 
     public function store(Request $request)
     {
         $validate = $request->validate([
-            'fname'                     => ['required', 'string', 'alpha'],
-            'lname'                     => ['required', 'string', 'alpha'],
-            'email'                     => ['required', Rule::unique('users', 'email'), 'email', 'string', 'lowercase'],
-            'position_id'               => ['required', Rule::exists('positions', 'id')],
-            'branch_id'                 => ['required', Rule::exists('branches', 'id')],
-            'department_id'             => ['nullable', Rule::exists('departments', 'id')],
-            'employee_id'               => ['required', Rule::unique('users', 'emp_id')],
-            'username'                  => ['required', 'string', 'lowercase', Rule::unique('users', 'username')],
-            'contact'                   => ['required', 'string'],
-            'password'                  => ['required', 'string', 'min: 8', 'max:20'],
-            'role_id'                   => ['required', Rule::exists('roles', 'id')]
+            'fname' => ['required', 'string', 'alpha'],
+            'lname' => ['required', 'string', 'alpha'],
+            'email' => ['required', Rule::unique('users', 'email'), 'email', 'string', 'lowercase'],
+            'position_id' => ['required', Rule::exists('positions', 'id')],
+            'branch_id' => ['required', Rule::exists('branches', 'id')],
+            'department_id' => ['nullable', Rule::exists('departments', 'id')],
+            'employee_id' => ['required', Rule::unique('users', 'emp_id')],
+            'username' => ['required', 'string', 'lowercase', Rule::unique('users', 'username')],
+            'contact' => ['required', 'string'],
+            'password' => ['required', 'string', 'min: 8', 'max:20'],
+            'role_id' => ['required', Rule::exists('roles', 'id')]
         ]);
 
         $user = User::create([
-            'fname'                     => $validate['fname'],
-            'lname'                     => $validate['lname'],
-            'email'                     => $validate['email'],
-            'position_id'               => $validate['position_id'],
-            'department_id'             => $validate['department_id'] ?? null,
-            'emp_id'                    => $validate['employee_id'],
-            'username'                  => $validate['username'],
-            'contact'                   => $validate['contact'],
-            'password'                  => $validate['password'],
-            'is_active'                 => 'active'
+            'fname' => $validate['fname'],
+            'lname' => $validate['lname'],
+            'email' => $validate['email'],
+            'position_id' => $validate['position_id'],
+            'department_id' => $validate['department_id'] ?? null,
+            'emp_id' => $validate['employee_id'],
+            'username' => $validate['username'],
+            'contact' => $validate['contact'],
+            'password' => $validate['password'],
+            'is_active' => 'active'
         ]);
 
         $user->assignRole($validate['role_id']);
         $user->branches()->sync($validate['branch_id']);
 
         return response()->json([
-            "message"       => "Registered Successfully",
+            "message" => "Registered Successfully",
         ], 200);
     }
 
@@ -142,13 +142,13 @@ class UserController extends Controller
 
         if ($user->is_active === "pending") {
             return response()->json([
-                "message"   => "Your account is not activated yet. Please wait for admin to approve."
+                "message" => "Your account is not activated yet. Please wait for admin to approve."
             ], 401);
         }
 
         if ($user->is_active === "declined") {
             return response()->json([
-                "message"   => "Your account has been rejected."
+                "message" => "Your account has been rejected."
             ], 401);
         }
 
@@ -159,16 +159,16 @@ class UserController extends Controller
 
         if (!Auth::attempt($credentials)) {
             return response()->json([
-                "status"    => false,
-                "message"   => "Email and password do not match our records"
+                "status" => false,
+                "message" => "Email and password do not match our records"
             ], 400);
         }
 
         $role = $user->getRoleNames();
 
         return response()->json([
-            "role"    => $role,
-            "status"  => true,
+            "role" => $role,
+            "status" => true,
             "message" => "Login successful. Redirecting you to Dashboard"
         ], 200);
     }
@@ -180,7 +180,7 @@ class UserController extends Controller
         $department_filter = $request->input('department');
         $branch_filter = $request->input('branch');
 
-        $users  = User::with([
+        $users = User::with([
             'branches',
             'departments',
             'positions',
@@ -211,8 +211,8 @@ class UserController extends Controller
             ->get();
 
         return response()->json([
-            'message'       => 'Users fetched successfully',
-            'users'         => $users
+            'message' => 'Users fetched successfully',
+            'users' => $users
         ], 200);
     }
 
@@ -223,7 +223,7 @@ class UserController extends Controller
         $search_filter = $request->input('search');
         $status_filter = $request->input('status');
 
-        $pending_users  = User::with('positions', 'branches', 'departments', 'roles')
+        $pending_users = User::with('positions', 'branches', 'departments', 'roles')
             ->whereNot('is_active', "active")
             ->whereNot('id', Auth::id())
             ->when(
@@ -237,9 +237,9 @@ class UserController extends Controller
             ->paginate($perPage);
 
         return response()->json([
-            'user_status'       => $status_filter,
-            'message'      => 'ok',
-            'users'        => $pending_users
+            'user_status' => $status_filter,
+            'message' => 'ok',
+            'users' => $pending_users
         ], 200);
     }
 
@@ -250,7 +250,7 @@ class UserController extends Controller
         $role_filter = $request->input('role');
         $search_filter = $request->input('search');
 
-        $users  = User::with('branches', 'departments', 'positions', 'roles')
+        $users = User::with('branches', 'departments', 'positions', 'roles')
             ->where('is_active', "active")
             ->whereNot('id', Auth::id())
             ->when(
@@ -264,8 +264,8 @@ class UserController extends Controller
             ->paginate($perPage);
 
         return response()->json([
-            'message'   => 'ok',
-            'users'     => $users
+            'message' => 'ok',
+            'users' => $users
         ], 200);
     }
 
@@ -281,13 +281,13 @@ class UserController extends Controller
             'roles'
         );
         return response()->json([
-            'data'  =>  $shownUser
+            'data' => $shownUser
         ], 200);
     }
 
     public function getAllBranchHeads(Request $request)
     {
-        $search  = $request->input('search');
+        $search = $request->input('search');
         $users = User::with([
             'branches',
             'departments',
@@ -300,13 +300,13 @@ class UserController extends Controller
             ->get();
 
         return response()->json([
-            'branch_heads'      =>  $users
+            'branch_heads' => $users
         ], 200);
     }
 
     public function getAllAreaManager(Request $request)
     {
-        $search  = $request->input('search');
+        $search = $request->input('search');
         $users = User::with([
             'branches',
             'departments',
@@ -319,7 +319,7 @@ class UserController extends Controller
             ->get();
 
         return response()->json([
-            'branch_heads'      =>  $users
+            'branch_heads' => $users
         ], 200);
     }
 
@@ -338,7 +338,7 @@ class UserController extends Controller
             ->get();
 
         return response()->json([
-            'users'      =>  $users
+            'users' => $users
         ], 200);
     }
 
@@ -348,7 +348,7 @@ class UserController extends Controller
     {
         $manager = Auth::user();
 
-        $search  = $request->input('search');
+        $search = $request->input('search');
         $position_filter = $request->input('position');
         $perPage = $request->input('per_page', 10);
 
@@ -434,7 +434,7 @@ class UserController extends Controller
             }
 
             //Department manager
-            if ($isHO  && !empty($manager->department_id)) {
+            if ($isHO && !empty($manager->department_id)) {
                 $employees = User::with('departments', 'branches', 'positions', "roles")
                     ->whereRelation('branches', 'branch_id', 126) //<--- must branch HO
                     ->when(
@@ -459,37 +459,36 @@ class UserController extends Controller
         ], 401);
     }
 
-
     //update
     public function updateUser(User $user, Request $request)
     {
         $validate = $request->validate([
-            'fname'                     => ['required', 'string', 'alpha'],
-            'lname'                     => ['required', 'string', 'alpha'],
-            'email'                     => ['required', Rule::unique('users', 'email')->ignore($user->id), 'email', 'string', 'lowercase'],
-            'position_id'               => ['required', Rule::exists('positions', 'id')],
-            'branch_id'                 => ['required', Rule::exists('branches', 'id')],
-            'department_id'             => ['nullable', Rule::exists('departments', 'id')],
-            'employeeId'                => ['required'],
-            'username'                  => ['required', 'string', 'lowercase', Rule::unique('users', 'username')->ignore($user->id)],
-            'contact'                   => ['required', 'string'],
-            'roles'                     => ['required', Rule::exists('roles', 'name')],
-            'password'                  => ['nullable', 'string', 'min: 8', 'max:20']
+            'fname' => ['required', 'string', 'alpha'],
+            'lname' => ['required', 'string', 'alpha'],
+            'email' => ['required', Rule::unique('users', 'email')->ignore($user->id), 'email', 'string', 'lowercase'],
+            'position_id' => ['required', Rule::exists('positions', 'id')],
+            'branch_id' => ['required', Rule::exists('branches', 'id')],
+            'department_id' => ['nullable', Rule::exists('departments', 'id')],
+            'employeeId' => ['required'],
+            'username' => ['required', 'string', 'lowercase', Rule::unique('users', 'username')->ignore($user->id)],
+            'contact' => ['required', 'string'],
+            'roles' => ['required', Rule::exists('roles', 'name')],
+            'password' => ['nullable', 'string', 'min: 8', 'max:20']
         ]);
 
         $user->syncRoles([$validate['roles']]);
         $user->branches()->sync([$validate['branch_id']]);
 
         $updateData = [
-            'fname'                     => $validate['fname'],
-            'lname'                     => $validate['lname'],
-            'email'                     => $validate['email'],
-            'position_id'               => $validate['position_id'],
-            'department_id'             => $validate['department_id'] ?? $user->department_id ?? null,
-            'username'                  => $validate['username'],
-            'contact'                   => $validate['contact'],
-            'contact'                   => $validate['contact'],
-            'emp_id'                    => $validate['employeeId'],
+            'fname' => $validate['fname'],
+            'lname' => $validate['lname'],
+            'email' => $validate['email'],
+            'position_id' => $validate['position_id'],
+            'department_id' => $validate['department_id'] ?? $user->department_id ?? null,
+            'username' => $validate['username'],
+            'contact' => $validate['contact'],
+            'contact' => $validate['contact'],
+            'emp_id' => $validate['employeeId'],
         ];
 
         if ($request->filled("password")) {
@@ -499,7 +498,7 @@ class UserController extends Controller
         $user->update($updateData);
 
         return response()->json([
-            'message'   => 'Updated Successfully'
+            'message' => 'Updated Successfully'
         ], 200);
     }
 
@@ -514,16 +513,16 @@ class UserController extends Controller
         }
 
         $validated = $request->validate([
-            'username'                 => ['nullable', 'string'],
-            'email'                    => ['nullable', 'email'],
-            'current_password'         => ['required', 'current_password:sanctum'],
-            'new_password'             => ['nullable', 'required_with:confirm_password'],
-            'confirm_password'         => ['nullable', 'required_with:new_password', 'same:new_password'],
+            'username' => ['nullable', 'string'],
+            'email' => ['nullable', 'email'],
+            'current_password' => ['required', 'current_password:sanctum'],
+            'new_password' => ['nullable', 'required_with:confirm_password'],
+            'confirm_password' => ['nullable', 'required_with:new_password', 'same:new_password'],
         ]);
 
         $items = [
-            'username'                  => $validated['username'] ?? $user->username,
-            'email'                     => $validated['email'] ?? $user->email,
+            'username' => $validated['username'] ?? $user->username,
+            'email' => $validated['email'] ?? $user->email,
         ];
 
 
@@ -534,7 +533,7 @@ class UserController extends Controller
         //file handling | storing
         if ($request->file('signature')) {
             $signature = $request->file('signature');
-            $name = time() . '-' .  $user->username . '.' . $signature->getClientOriginalExtension();
+            $name = time() . '-' . $user->username . '.' . $signature->getClientOriginalExtension();
             $path = $signature->storeAs('user-signatures', $name, 'public');
 
             if ($user->signature) {
@@ -551,8 +550,8 @@ class UserController extends Controller
         $user->update($items);
 
         return response()->json([
-            "status"        => true,
-            "message"       => "Uploaded Successfully",
+            "status" => true,
+            "message" => "Uploaded Successfully",
         ], 201);
     }
 
@@ -562,10 +561,10 @@ class UserController extends Controller
         $user = Auth::user();
 
         $user->update([
-            'requestSignatureReset'     =>  true,
+            'requestSignatureReset' => true,
         ]);
 
-        $notificationData =  new EvalNotifications(
+        $notificationData = new EvalNotifications(
             "Signature reset request from: " . $user->fname . " " . $user->lname,
         );
 
@@ -584,43 +583,43 @@ class UserController extends Controller
             );
 
         return response()->json([
-            'message'       =>  'Approved'
+            'message' => 'Approved'
         ], 201);
     }
 
     public function approvedSignatureReset(User $user)
     {
         $user->update([
-            'approvedSignatureReset'     =>  true,
+            'approvedSignatureReset' => true,
         ]);
         $user->notify(new EvalNotifications("Your signature reset request has been approved."));
 
         return response()->json([
-            'message'       =>  'Approved'
+            'message' => 'Approved'
         ], 201);
     }
 
     public function rejectSignatureReset(User $user)
     {
         $user->update([
-            'requestSignatureReset'     =>  false,
+            'requestSignatureReset' => false,
         ]);
         $user->notify(new EvalNotifications("Unfortunately, your signature reset request has been declined."));
 
 
         return response()->json([
-            'message'       =>  'Rejected Successfully'
+            'message' => 'Rejected Successfully'
         ], 201);
     }
 
     public function approveRegistration(User $user)
     {
         $user->update([
-            'is_active'     =>  'active'
+            'is_active' => 'active'
         ]);
 
         return response()->json([
-            'message'       =>  'Approved'
+            'message' => 'Approved'
         ], 201);
     }
 
@@ -628,11 +627,11 @@ class UserController extends Controller
     public function rejectRegistration(User $user)
     {
         $user->update([
-            'is_active'      =>  'declined'
+            'is_active' => 'declined'
         ]);
 
         return response()->json([
-            'message'       =>  'Declined successfully'
+            'message' => 'Declined successfully'
         ], 201);
     }
 
@@ -642,7 +641,7 @@ class UserController extends Controller
         $user->branches()->syncWithoutDetaching($request->branch_ids);
 
         return response()->json([
-            'message'       =>  'User Branch Updated'
+            'message' => 'User Branch Updated'
         ], 201);
     }
 
@@ -662,7 +661,7 @@ class UserController extends Controller
         $user->delete();
 
         return response()->json([
-            'message'       => 'Deleted Successfully'
+            'message' => 'Deleted Successfully'
         ], 200);
     }
 
