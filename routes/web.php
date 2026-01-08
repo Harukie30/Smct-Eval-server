@@ -2,4 +2,4 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::redirect('/', 'http://localhost:3000');
+// Route::redirect('/', 'http://localhost:3000');

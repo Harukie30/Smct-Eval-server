@@ -34,6 +34,7 @@ class UsersEvaluationController extends Controller
             'evaluator',
             'evaluator.branches',
             'evaluator.positions',
+            'evaluator.roles',
             'jobKnowledge',
             'adaptability',
             'qualityOfWorks',
@@ -55,7 +56,7 @@ class UsersEvaluationController extends Controller
                 )
             )
             ->when($year, fn($q)    => $q->whereYear('created_at', $year))
-            ->latest('updated_at')
+            ->latest('created_at')
             ->paginate($perPage);
 
         return response()->json([
@@ -94,7 +95,6 @@ class UsersEvaluationController extends Controller
     public function store(Request $request, User $user)
     {
         $auth_user_evaluator = Auth::user();
-
 
         $validated  = $request->validate([
             //main
@@ -333,7 +333,6 @@ class UsersEvaluationController extends Controller
             'ethicals',
             'customerServices'
         ])
-            ->orderBy('id', 'desc')
             ->where('employee_id', $user->id)
             ->search($search)
             ->when($status,  fn($q) =>  $q->where('status', $status))
@@ -347,13 +346,12 @@ class UsersEvaluationController extends Controller
                 })
             )
             ->when($year,    fn($q) =>  $q->whereYear('created_at', $year))
-            ->latest('updated_at')
+            ->latest('created_at')
             ->paginate($perPage);
 
         $years = UsersEvaluation::selectRaw("YEAR(created_at) as year")
-            ->groupBy('year')
             ->where('employee_id', $user->id)
-            ->latest('updated_at')
+            ->groupBy('year')
             ->get();
 
         return response()->json([
@@ -387,7 +385,6 @@ class UsersEvaluationController extends Controller
             'ethicals',
             'customerServices'
         )
-            ->orderBy('id', 'desc')
             ->where('evaluator_id', $user->id)
             ->search($search)
             ->when($status, fn($q) =>  $q->where('status', $status))
@@ -401,7 +398,7 @@ class UsersEvaluationController extends Controller
                 })
             )
             ->when($year,   fn($q) =>  $q->whereYear('created_at', $year))
-            ->latest('updated_at')
+            ->latest('created_at')
             ->paginate($perPage);
 
         return response()->json([

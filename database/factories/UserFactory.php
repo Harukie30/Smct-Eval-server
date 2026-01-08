@@ -38,7 +38,7 @@ class UserFactory extends Factory
             'is_active' => fake()->randomElement(["pending", "active", "declined"]),
             'signature' => $this->faker->text(200),
             'avatar' => $this->faker->optional()->imageUrl(200, 200, 'people'),
-            'bio' => $this->faker->optional()->sentence(12),
+            // 'bio' => $this->faker->optional()->sentence(12),
         ];
     }
 

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use App\Models\UsersEvaluation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -24,11 +25,13 @@ class HrDashboardController extends Controller
 
         $pending_eval = UsersEvaluation::where('status', 'pending')->whereNotNull('rating')->count() ?? 0;
         $completed_eval = UsersEvaluation::where('status', 'completed')->whereNotNull('rating')->count() ?? 0;
+        $employees = User::where('is_active', 'active')->count();
 
         return response()->json([
             'new_eval'            => $new_eval,
             'pending_eval'        => $pending_eval,
             'completed_eval'      => $completed_eval,
+            'total_users'         => $employees
         ], 200);
     }
 

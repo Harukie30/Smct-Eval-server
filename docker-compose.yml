@@ -1,0 +1,75 @@
+services:
+  performance-server:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    image: performance-server
+    container_name: performance-server
+    restart: unless-stopped
+    working_dir: /var/www/
+    volumes:
+      - /home/webserver/systems/Performance-Evaluation/Smct-Eval-server/.env:/var/www/.env
+      - ./:/var/www
+      - ./docker-compose/nginx/default.conf:/etc/nginx/nginx.conf
+
+    networks:
+      - performance
+    environment:
+      DB_CONNECTION: mysql
+      DB_HOST: 172.17.0.1
+      DB_PORT: 3306
+      DB_DATABASE: performance_evaluation
+      DB_USERNAME: smct
+      DB_PASSWORD: smct
+    # command: php artisan queue:listen --tries=1
+
+  performance-nginx:
+    image: nginx:alpine
+    container_name: performance-nginx
+    restart: unless-stopped
+    ports:
+      - 7061:7061
+    volumes:
+      - ./docker-compose/nginx/default.conf:/etc/nginx/nginx.conf
+      - ./:/var/www
+
+    networks:
+      - performance
+
+  performance-reverb:
+    build:
+      context: ./
+      dockerfile: Dockerfile-reverb
+    ports:
+    - "8085:8085" # expose Reverb server
+    environment:
+    - APP_URL=${APP_URL}
+    - LARAVEL_REVERB_APP_KEY=${REVERB_APP_KEY}
+    - LARAVEL_REVERB_APP_SECRET=${REVERB_APP_SECRET}
+    depends_on:
+    - performance-server
+    restart: unless-stopped
+    container_name: performance-reverb
+
+    networks:
+      - performance
+
+  performance-worker:
+    image: performance-server
+    container_name: performance-server-worker
+    working_dir: /var/www/
+    depends_on:
+      - performance-server
+    command: php artisan queue:work --tries=3
+    volumes:
+      - ./storage:/var/www/storage
+      - ./bootstrap/cache:/var/www/bootstrap/cache
+      - /home/webserver/systems/Performance-Evaluation/Smct-Eval-server/.env:/var/www/.env
+      - ./:/var/www
+    networks:
+      - performance
+    restart: unless-stopped
+
+networks:
+  performance:
+    driver: bridge
